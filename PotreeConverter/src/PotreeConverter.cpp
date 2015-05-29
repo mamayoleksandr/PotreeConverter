@@ -197,12 +197,10 @@ void PotreeConverter::convert(){
 	// calculate AABB and total number of points
 	AABB aabb;
 	// if aabbValues is given by the user we set the the variable aabb with them
-	bool userAABB = false;
-	if(aabbValues.size() == 0){
+	if(aabbValues.size() == 6){
 		Vector3<double> userMin(aabbValues[0],aabbValues[1],aabbValues[2]);
 		Vector3<double> userMax(aabbValues[3],aabbValues[4],aabbValues[5]);
 		aabb = AABB(userMin, userMax);
-		userAABB = true;
 	}
 
 	long long numPoints = 0;
@@ -210,7 +208,7 @@ void PotreeConverter::convert(){
 
 		PointReader *reader = createPointReader(source);
 
-		if (userAABB == false){
+		if (aabbValues.size() == 0){
 			AABB lAABB = reader->getAABB();
 			aabb.update(lAABB.min);
 			aabb.update(lAABB.max);

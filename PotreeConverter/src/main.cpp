@@ -75,25 +75,27 @@ int main(int argc, char **argv){
 		// read parameters from command line
 		po::options_description desc("Options"); 
 		desc.add_options() 
-			("help,h", "prints usage")
-			("generate-page,p", "Generates a ready to use web page along with the model.")
-			("outdir,o", po::value<string>(&outdir), "output directory") 
-			("spacing,s", po::value<float>(&spacing), "Distance between points at root level. Distance halves each level.") 
-			("spacing-by-diagonal-fraction,d", po::value<int>(&diagonalFraction), "Maximum number of points on the diagonal in the first level (sets spacing). spacing = diagonal / value")
-			("levels,l", po::value<int>(&levels), "Number of levels that will be generated. 0: only root, 1: root and its children, ...")
-			("input-format,f", po::value<string>(&format), "Input format. xyz: cartesian coordinates as floats, rgb: colors as numbers, i: intensity as number")
+			("help", "prints usage")
+			("generate-page", "Generates a ready to use web page along with the model.")
+			("outdir", po::value<string>(&outdir), "output directory") 
+			("spacing", po::value<float>(&spacing), "Distance between points at root level. Distance halves each level.") 
+			("spacing-by-diagonal-fraction", po::value<int>(&diagonalFraction), "Maximum number of points on the diagonal in the first level (sets spacing). spacing = diagonal / value")
+			("levels", po::value<int>(&levels), "Number of levels that will be generated. 0: only root, 1: root and its children, ...")
+			("input-format", po::value<string>(&format), "Input format. xyz: cartesian coordinates as floats, rgb: colors as numbers, i: intensity as number")
 			("color-range", po::value<std::vector<double> >()->multitoken(), "")
 			("intensity-range", po::value<std::vector<double> >()->multitoken(), "")
 			("output-format", po::value<string>(&outFormatString), "Output format can be BINARY, LAS or LAZ. Default is BINARY")
-			("output-attributes,a", po::value<std::vector<std::string> >()->multitoken(), "can be any combination of RGB, INTENSITY and CLASSIFICATION. Default is RGB.")
+			("output-attributes", po::value<std::vector<std::string> >()->multitoken(), "can be any combination of RGB, INTENSITY and CLASSIFICATION. Default is RGB.")
 			("scale", po::value<double>(&scale), "Scale of the X, Y, Z coordinate in LAS and LAZ files.")
 			("aabb", po::value<std::vector<double> >()->multitoken(), "Bounding cube as minX minY minZ maxX maxY maxZ. If not provided it is automatically computed")
 			("source", po::value<std::vector<std::string> >(), "Source file. Can be LAS, LAZ, PTX or PLY");
-		po::positional_options_description p; 
-		p.add("source", -1); 
+//		po::positional_options_description p; 
+//		p.add("source", -1); 
 
-		po::variables_map vm; 
-		po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm); 
+		po::variables_map vm;
+                po::store(po::parse_command_line(argc, argv, desc, po::command_line_style::unix_style ^ po::command_line_style::allow_short), vm); 
+//                po::store(po::command_line_parser(argc, argv).options(desc).style(po::command_line_style::unix_style ^ po::command_line_style::allow_short).run(), vm);
+//		po::store(po::parse_command_line(argc, argv).options(desc).positional(p).run(), vm); 
 		po::notify(vm);
 
 		if(vm.count("help") || !vm.count("source")){
