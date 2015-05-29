@@ -66,6 +66,7 @@ int main(int argc, char **argv){
 	vector<double> intensityRange;
 	vector<string> outputAttributes;
 	bool generatePage;
+	vector<double> aabbValues;
 
 
 	cout.imbue(std::locale(""));
@@ -86,6 +87,7 @@ int main(int argc, char **argv){
 			("output-format", po::value<string>(&outFormatString), "Output format can be BINARY, LAS or LAZ. Default is BINARY")
 			("output-attributes,a", po::value<std::vector<std::string> >()->multitoken(), "can be any combination of RGB, INTENSITY and CLASSIFICATION. Default is RGB.")
 			("scale", po::value<double>(&scale), "Scale of the X, Y, Z coordinate in LAS and LAZ files.")
+			("aabb", po::value<std::vector<double> >()->multitoken(), "Bounding cube as minX minY minZ maxX maxY maxZ. If not provided it is automatically computed")
 			("source", po::value<std::vector<std::string> >(), "Source file. Can be LAS, LAZ, PTX or PLY");
 		po::positional_options_description p; 
 		p.add("source", -1); 
@@ -125,11 +127,24 @@ int main(int argc, char **argv){
 			}
 		}
 
+		if(vm.count("aabb")){
+			aabbValues = vm["aabb"].as< vector<double> >();
+
+			if(aabbValues.size() != 6){
+				cerr << "AABB only takes 6 arguments" << endl;
+				return 1;
+			}
+		}
+
+
 		if(vm.count("output-attributes")){
 			outputAttributes = vm["output-attributes"].as< vector<string> >();
 		}else{
 			outputAttributes.push_back("RGB");
 		}
+
+
+
 
 		// set default parameters 
 		path pSource(source[0]);
@@ -236,7 +251,7 @@ int main(int argc, char **argv){
 	}
 	
 	try{
-		PotreeConverter pc(source, outdir, spacing, diagonalFraction, levels, format, colorRange, intensityRange, scale, outFormat, outputAttributes);
+		PotreeConverter pc(source, outdir, spacing, diagonalFraction, levels, format, colorRange, intensityRange, scale, outFormat, outputAttributes, aabbValues);
 		pc.convert();
 	}catch(exception &e){
 		cout << "ERROR: " << e.what() << endl;
